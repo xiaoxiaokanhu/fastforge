@@ -141,6 +141,7 @@ class UnifiedDistributor {
     List<String> targets, {
     String? channel,
     String? artifactName,
+    String? description,
     required bool cleanBeforeBuild,
     required Map<String, dynamic> buildArguments,
     Map<String, String>? variables,
@@ -199,6 +200,7 @@ class UnifiedDistributor {
             'flavor': buildArguments['flavor'],
             'channel': channel,
             'artifact_name': artifactName,
+            'description': description,
           };
           if (hooks != null) {
             arguments['hooks'] = hooks;

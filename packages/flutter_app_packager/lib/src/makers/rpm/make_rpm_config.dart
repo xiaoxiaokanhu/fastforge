@@ -8,6 +8,7 @@ class MakeRPMConfig extends MakeLinuxPackageConfig {
     required this.displayName,
     this.packageName,
     this.startupNotify = true,
+    this.startupWMClass,
     this.actions,
     this.categories,
     this.genericName,
@@ -50,6 +51,7 @@ class MakeRPMConfig extends MakeLinuxPackageConfig {
       metainfo: json['metainfo'] as String?,
       genericName: json['generic_name'] as String?,
       startupNotify: json['startup_notify'] as bool?,
+      startupWMClass: json['startup_wm_class'] as String?,
       keywords: (json['keywords'] as List<dynamic>?)?.cast<String>(),
       supportedMimeType:
           (json['supported_mime_type'] as List<dynamic>?)?.cast<String>(),
@@ -90,6 +92,7 @@ class MakeRPMConfig extends MakeLinuxPackageConfig {
   String? metainfo;
   String? genericName;
   bool? startupNotify;
+  String? startupWMClass;
   List<String>? keywords;
   List<String>? supportedMimeType;
   List<String>? actions;
@@ -198,6 +201,7 @@ class MakeRPMConfig extends MakeLinuxPackageConfig {
             ? '${keywords!.join(';')};'
             : null,
         'StartupNotify': startupNotify,
+        'StartupWMClass': startupWMClass,
       }..removeWhere((key, value) => value == null),
     };
   }

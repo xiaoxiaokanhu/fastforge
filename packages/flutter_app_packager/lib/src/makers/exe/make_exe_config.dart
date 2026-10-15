@@ -3,6 +3,34 @@ import 'dart:io';
 import 'package:flutter_app_packager/src/api/app_package_maker.dart';
 import 'package:path/path.dart' as p;
 
+class InnoSetupLocale {
+  const InnoSetupLocale({
+    required this.lang,
+    this.file,
+  });
+
+  factory InnoSetupLocale.from(dynamic value) {
+    if (value is String) {
+      return InnoSetupLocale(lang: value);
+    }
+    if (value is Map) {
+      return InnoSetupLocale(
+        lang: value['lang']?.toString() ?? 'en',
+        file: value['file']?.toString(),
+      );
+    }
+    return const InnoSetupLocale(lang: 'en');
+  }
+
+  final String lang;
+  final String? file;
+
+  Map<String, dynamic> toJson() => {
+        'lang': lang,
+        if (file != null) 'file': file,
+      };
+}
+
 class MakeExeConfig extends MakeConfig {
   MakeExeConfig({
     this.scriptTemplate,
@@ -22,9 +50,15 @@ class MakeExeConfig extends MakeConfig {
   });
 
   factory MakeExeConfig.fromJson(Map<String, dynamic> json) {
-    List<String>? locales =
-        json['locales'] != null ? List<String>.from(json['locales']) : null;
-    if (locales == null || locales.isEmpty) locales = ['en'];
+    List<InnoSetupLocale>? locales;
+    if (json['locales'] is List) {
+      locales = (json['locales'] as List)
+          .map((e) => InnoSetupLocale.from(e))
+          .toList();
+    }
+    if (locales == null || locales.isEmpty) {
+      locales = [const InnoSetupLocale(lang: 'en')];
+    }
 
     // use absolute path
     String iconfile = '';
@@ -64,7 +98,7 @@ class MakeExeConfig extends MakeConfig {
   String? installDirName;
   String? setupIconFile;
   String? privilegesRequired;
-  List<String>? locales;
+  List<InnoSetupLocale>? locales;
 
   /// Space-separated list of architecture identifiers (or a boolean expression)
   /// specifying which architectures Setup is allowed to run on.
@@ -109,7 +143,7 @@ class MakeExeConfig extends MakeConfig {
       'install_dir_name': installDirName,
       'setup_icon_file': setupIconFile,
       'privileges_required': privilegesRequired,
-      'locales': locales,
+      'locales': locales?.map((e) => e.toJson()).toList(),
       'architectures_allowed': architecturesAllowed,
       'architectures_install_in_64bit_mode': architecturesInstallIn64BitMode,
     }..removeWhere((key, value) => value == null);

@@ -6,9 +6,9 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
 const _kArtifactName =
-    '{{name}}{{#flavor}}-{{flavor}}{{/flavor}}-{{build_name}}{{#has_build_number}}+{{build_number}}{{/has_build_number}}{{#is_profile}}-{{build_mode}}{{/is_profile}}-{{platform}}{{#is_installer}}-setup{{/is_installer}}{{#ext}}.{{ext}}{{/ext}}';
+    '{{name}}{{#flavor}}-{{flavor}}{{/flavor}}-{{build_name}}{{#has_build_number}}+{{build_number}}{{/has_build_number}}{{#is_profile}}-{{build_mode}}{{/is_profile}}{{#description}}-{{description}}{{/description}}-{{platform}}{{#is_installer}}-setup{{/is_installer}}{{#ext}}.{{ext}}{{/ext}}';
 const _kArtifactNameWithChannel =
-    '{{name}}-{{channel}}-{{build_name}}{{#has_build_number}}+{{build_number}}{{/has_build_number}}{{#is_profile}}-{{build_mode}}{{/is_profile}}-{{platform}}{{#is_installer}}-setup{{/is_installer}}{{#ext}}.{{ext}}{{/ext}}';
+    '{{name}}-{{channel}}-{{build_name}}{{#has_build_number}}+{{build_number}}{{/has_build_number}}{{#is_profile}}-{{build_mode}}{{/is_profile}}{{#description}}-{{description}}{{/description}}-{{platform}}{{#is_installer}}-setup{{/is_installer}}{{#ext}}.{{ext}}{{/ext}}';
 
 class MakeConfig {
   late bool isInstaller = false;
@@ -18,6 +18,10 @@ class MakeConfig {
   late String platform;
   String? flavor;
   String? channel;
+
+  /// Suffix passed by `package --description`, distinct from a packager's own
+  /// description text.
+  String? description;
 
   /// https://mustache.github.io/mustache.5.html
   String? artifactName;
@@ -49,6 +53,7 @@ class MakeConfig {
     platform = makeConfig.platform;
     flavor = makeConfig.flavor;
     channel = makeConfig.channel;
+    description = makeConfig.description;
     artifactName = makeConfig.artifactName;
     packageFormat = makeConfig.packageFormat;
     outputDirectory = makeConfig.outputDirectory;
@@ -81,6 +86,7 @@ class MakeConfig {
       'platform': platform,
       'flavor': flavor,
       'channel': channel,
+      'description': description,
       'ext': packageFormat.isEmpty ? null : packageFormat,
     };
 
@@ -140,6 +146,7 @@ class MakeConfig {
       'platform': platform,
       'flavor': flavor,
       'channel': channel,
+      'description': description,
       'artifactName': artifactName,
       'packageFormat': packageFormat,
       'outputDirectory': outputDirectory.path,
@@ -178,6 +185,7 @@ class DefaultMakeConfigLoader extends MakeConfigLoader {
       ..buildOutputFiles = buildOutputFiles
       ..flavor = arguments?['flavor']
       ..channel = arguments?['channel']
+      ..description = arguments?['description']
       ..artifactName = arguments?['artifact_name']
       ..packageFormat = packageFormat
       ..outputDirectory = outputDirectory;
